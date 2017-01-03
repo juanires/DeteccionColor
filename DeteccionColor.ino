@@ -30,32 +30,29 @@ void setup() {
 void loop() {
 
   if(flag <4){
-    if(p2==0){
-      p2=1;
-      p1=millis();//Captura el tiemmpo inicial para luego calcular el tiempo total de captura de las 4 frecuencias
-    }
+  
     obtenerFrecuencia(flag);
     tiempoInicial = micros();
     interrupts(); //Se habilitan las interrupciones
+    numeroInterrupciones=0;
     while(!(numeroInterrupciones == 4)); //Mientras no se produzcan dos interrupciones, se queda en el bucle
     noInterrupts(); //Cuando ya paso el tiempo, se deshabilitan las interrupciones
     tiempoTranscurrido = micros() - tiempoInicial;
-    //f= tiempoTranscurrido /4;
-    frecuencias[flag]= (1000000/(tiempoTranscurrido/2));
-    //frecuencias[flag]= (1000000/((tiempoTranscurrido /4)*3)); //Veces interrupidas - 1 (cantidad de periodos). dividido el tiempo (en segundos). Esto da la frecuencia en Hz
+    frecuencias[flag]= (1000000/((tiempoTranscurrido /4)*2)); //Veces interrupidas - 1 (cantidad de periodos). dividido el tiempo (en segundos). Esto da la frecuencia en Hz
     numeroInterrupciones=0;
     flag++;
   }
   else{
     flag = 0; //Si se capturaron las 4 frecuencias, se pone el contador a 0
-    p2=0;
+    //p2=0;
     for(int i=0; i<4; i++){
       Serial.println(frecuencias[i]);
     }
     Serial.println("------");
-    Serial.println(millis()-p1);
-    Serial.println("------");
+    //Serial.println(millis()-p1);
+    //Serial.println("------");
   }
+  //delay(1);
 
 }
 
