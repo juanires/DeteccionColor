@@ -30,7 +30,7 @@ void setup() {
 void loop() {
 
   if(flag <4){
-  
+  //Esto es una prueba
     obtenerFrecuencia(flag);
     tiempoInicial = micros();
     interrupts(); //Se habilitan las interrupciones
