@@ -18,10 +18,10 @@ void setup() {
   Serial.begin(9600);
   configurarPines();
   //configurarSensor();
-  configurarInterrupciones();
-  noInterrupts(); //Se deshabilitan las interrupciones
+ // configurarInterrupciones();
+ // noInterrupts(); //Se deshabilitan las interrupciones
   flag = 0;
-  numeroInterrupciones = 0;
+  numeroInterrupciones = 4;
   tiempoInicial = 0;
   tiempoTranscurrido = 0;
   p2=0;
@@ -32,27 +32,25 @@ void loop() {
   if(flag <4){
   //Esto es una prueba
     obtenerFrecuencia(flag);
-    tiempoInicial = micros();
-    interrupts(); //Se habilitan las interrupciones
-    numeroInterrupciones=0;
-    while(!(numeroInterrupciones == 4)); //Mientras no se produzcan dos interrupciones, se queda en el bucle
-    noInterrupts(); //Cuando ya paso el tiempo, se deshabilitan las interrupciones
-    tiempoTranscurrido = micros() - tiempoInicial;
-    frecuencias[flag]= (1000000/((tiempoTranscurrido /4)*2)); //Veces interrupidas - 1 (cantidad de periodos). dividido el tiempo (en segundos). Esto da la frecuencia en Hz
-    numeroInterrupciones=0;
+    for(numeroInterrupciones=0; numeroInterrupciones<100;numeroInterrupciones++){
+      tiempoInicial  = tiempoInicial + pulseIn(OUT,HIGH); 
+    }
+    //tiempoInicial = pulseIn(OUT,HIGH);
+    tiempoTranscurrido = (tiempoInicial*2) /100;
+    frecuencias[flag]= (1000000/(tiempoTranscurrido));
+    tiempoInicial = 0;
+    tiempoTranscurrido =0;
     flag++;
-  }
+    
+   }
   else{
     flag = 0; //Si se capturaron las 4 frecuencias, se pone el contador a 0
-    //p2=0;
     for(int i=0; i<4; i++){
       Serial.println(frecuencias[i]);
     }
     Serial.println("------");
-    //Serial.println(millis()-p1);
-    //Serial.println("------");
   }
-  //delay(1);
+  
 
 }
 
