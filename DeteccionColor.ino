@@ -11,8 +11,6 @@ int frecuencias[4];
 int flag;
 unsigned long tiempoInicial;
 unsigned long tiempoTranscurrido;
-unsigned long p1;
-int p2;
 
 void setup() {
   Serial.begin(9600);
@@ -24,17 +22,12 @@ void setup() {
   numeroInterrupciones = 0;
   tiempoInicial = 0;
   tiempoTranscurrido = 0;
-  p2=0;
 }
 
 void loop() {
 
   if(flag <4){
-    if(p2==0){
-      p2=1;
-      p1=millis();//Captura el tiemmpo inicial para luego calcular el tiempo total de captura de las 4 frecuencias
-    }
-   
+  
     obtenerFrecuencia(flag);
     tiempoInicial = micros();
     interrupts(); //Se habilitan las interrupciones
@@ -49,12 +42,9 @@ void loop() {
   }
   else{
     flag = 0; //Si se capturaron las 4 frecuencias, se pone el contador a 0
-    p2=0;
     for(int i=0; i<4; i++){
       Serial.println(frecuencias[i]);
     }
-    Serial.println("------");
-    Serial.println(millis()-p1);
     Serial.println("------");
   }
 }
