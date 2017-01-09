@@ -7,44 +7,20 @@
 #define NUMERO_MUESTRAS 25
 
 volatile int numeroInterrupciones;
-int pinInterrupcion = OUT;
 int frecuencias[4];
-int flag;
-unsigned long tiempoInicial;
-unsigned long tiempoTranscurrido;
-int numeroDeMuestras;
 
 void setup() {
   Serial.begin(9600);
   configurarPines();
   configurarSensor();
-  flag = 0;
-  numeroInterrupciones = 4;
-  tiempoInicial = 0;
-  tiempoTranscurrido = 0;
 }
 
 void loop() {
 
-  if(flag <4){
-    obtenerFrecuencia(flag);
-    for(numeroInterrupciones=0; numeroInterrupciones < NUMERO_MUESTRAS;numeroInterrupciones++){
-      tiempoInicial  = tiempoInicial + pulseIn(OUT,HIGH); 
-    }
-    tiempoTranscurrido = (tiempoInicial*2) /NUMERO_MUESTRAS;
-    frecuencias[flag]= (1000000/(tiempoTranscurrido));
-    tiempoInicial = 0;
-    tiempoTranscurrido =0;
-    flag++;
-    
-   }
-  else{
-    flag = 0; //Si se capturaron las 4 frecuencias, se pone el contador a 0
-    for(int i=0; i<4; i++){
-      Serial.println(frecuencias[i]);
-    }
-    Serial.println("------");
-  }
+  deteccionCRGB();
+  for(int i=0; i<4; i++)
+    Serial.println(frecuencias[i]);
+  Serial.println("------");
 }
 
 /*
@@ -77,7 +53,7 @@ void configurarSensor(){
  */
 
 
-void obtenerFrecuencia(int c){
+void RGB(int c){
 
   switch(c){
     case 0:{ //Captura luminosidad
@@ -101,5 +77,25 @@ void obtenerFrecuencia(int c){
         break;
     }
   }//Cierre switch 
+}
+
+void deteccionCRGB(){
+
+  int flag = 0;
+  int contador;
+  unsigned long tiempoInicial = 0;
+  unsigned long tiempoTranscurrido = 0;
+  
+  while(flag <4){
+    RGB(flag);
+    for(contador=0; contador < NUMERO_MUESTRAS; contador++){
+      tiempoInicial  = tiempoInicial + pulseIn(OUT,HIGH); 
+    }
+    tiempoTranscurrido = (tiempoInicial*2) /NUMERO_MUESTRAS;
+    frecuencias[flag]= (1000000/(tiempoTranscurrido));
+    tiempoInicial = 0;
+    tiempoTranscurrido =0;
+    flag++;
+  }
 }
 
