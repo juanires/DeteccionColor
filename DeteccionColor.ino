@@ -10,9 +10,7 @@
 volatile int numeroInterrupciones;
 int pinInterrupcion = OUT;
 int frecuencias[4];
-int flag;
-unsigned long tiempoInicial;
-unsigned long tiempoTranscurrido;
+
 
 void setup() {
   Serial.begin(9600);
@@ -20,35 +18,16 @@ void setup() {
   configurarSensor();
   configurarInterrupciones();
   noInterrupts(); //Se deshabilitan las interrupciones
-  flag = 0;
   numeroInterrupciones = 0;
-  tiempoInicial = 0;
-  tiempoTranscurrido = 0;
 }
 
 void loop() {
-
-  if(flag <4){
   
-    obtenerFrecuencia(flag);
-    tiempoInicial = micros();
-    interrupts(); //Se habilitan las interrupciones
-    while(!(numeroInterrupciones == INTERRUPCIONES)); //Mientras no se produzcan dos interrupciones, se queda en el bucle
-    noInterrupts(); //Cuando ya paso el tiempo, se deshabilitan las interrupciones
-    tiempoTranscurrido = micros() - tiempoInicial;
-    frecuencias[flag]= (1000000/(tiempoTranscurrido/CICLOS));
-    numeroInterrupciones = 0;
-    tiempoTranscurrido = 0;
-    tiempoInicial = 0;
-    flag++; 
-  }
-  else{
-    flag = 0; //Si se capturaron las 4 frecuencias, se pone el contador a 0
-    for(int i=0; i<4; i++){
-      Serial.println(frecuencias[i]);
-    }
-    Serial.println("------");
-  }
+  deteccionFrecuenciaCRGB();
+  for(int i=0; i<4; i++)
+    Serial.println(frecuencias[i]);
+  Serial.println("------");
+
 }
 
 /*
@@ -92,7 +71,7 @@ void ISR_IE(){
   numeroInterrupciones++;
 }
 
-void obtenerFrecuencia(int c){
+void RGB(int c){
 
   switch(c){
     case 0:{ //Captura luminosidad
@@ -116,5 +95,26 @@ void obtenerFrecuencia(int c){
         break;
     }
   }//Cierre switch 
+}
+
+void deteccionFrecuenciaCRGB(){
+
+  int flag = 0;
+  unsigned long tiempoInicial;
+  unsigned long tiempoTranscurrido;
+    
+    while(flag <4){
+      RGB(flag);
+      tiempoInicial = micros();
+      interrupts(); //Se habilitan las interrupciones
+      while(!(numeroInterrupciones == INTERRUPCIONES)); //Mientras no se produzcan dos interrupciones, se queda en el bucle
+      noInterrupts(); //Cuando ya paso el tiempo, se deshabilitan las interrupciones
+      tiempoTranscurrido = micros() - tiempoInicial;
+      frecuencias[flag]= (1000000/(tiempoTranscurrido/CICLOS));
+      numeroInterrupciones = 0;
+      tiempoTranscurrido = 0;
+      tiempoInicial = 0;
+      flag++; 
+    }
 }
 
