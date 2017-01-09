@@ -6,7 +6,6 @@
 #define OUT 3
 #define NUMERO_MUESTRAS 25
 
-volatile int numeroInterrupciones;
 int frecuencias[4];
 
 void setup() {
