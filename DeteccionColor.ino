@@ -4,6 +4,7 @@
 #define S3 7
 #define LED 8
 #define OUT 3
+#define NUMERO_MUESTRAS 25
 
 volatile int numeroInterrupciones;
 int pinInterrupcion = OUT;
@@ -11,32 +12,26 @@ int frecuencias[4];
 int flag;
 unsigned long tiempoInicial;
 unsigned long tiempoTranscurrido;
-unsigned long p1;
-int p2;
+int numeroDeMuestras;
 
 void setup() {
   Serial.begin(9600);
   configurarPines();
-  //configurarSensor();
- // configurarInterrupciones();
- // noInterrupts(); //Se deshabilitan las interrupciones
+  configurarSensor();
   flag = 0;
   numeroInterrupciones = 4;
   tiempoInicial = 0;
   tiempoTranscurrido = 0;
-  p2=0;
 }
 
 void loop() {
 
   if(flag <4){
-  //Esto es una prueba
     obtenerFrecuencia(flag);
-    for(numeroInterrupciones=0; numeroInterrupciones<100;numeroInterrupciones++){
+    for(numeroInterrupciones=0; numeroInterrupciones < NUMERO_MUESTRAS;numeroInterrupciones++){
       tiempoInicial  = tiempoInicial + pulseIn(OUT,HIGH); 
     }
-    //tiempoInicial = pulseIn(OUT,HIGH);
-    tiempoTranscurrido = (tiempoInicial*2) /100;
+    tiempoTranscurrido = (tiempoInicial*2) /NUMERO_MUESTRAS;
     frecuencias[flag]= (1000000/(tiempoTranscurrido));
     tiempoInicial = 0;
     tiempoTranscurrido =0;
@@ -50,8 +45,6 @@ void loop() {
     }
     Serial.println("------");
   }
-  
-
 }
 
 /*
@@ -83,20 +76,9 @@ void configurarSensor(){
  * para capturar las frecuencias RGB o CLEAR
  */
 
-void configurarInterrupciones(){
-    configurarIntExterna(); //Interrupciones externas  
-}
-
-void configurarIntExterna(){
-  attachInterrupt(digitalPinToInterrupt(pinInterrupcion), ISR_IE, CHANGE);  
-}
-
-void ISR_IE(){
-  numeroInterrupciones++;
-}
 
 void obtenerFrecuencia(int c){
-/*
+
   switch(c){
     case 0:{ //Captura luminosidad
           digitalWrite(S2,HIGH); 
@@ -118,6 +100,6 @@ void obtenerFrecuencia(int c){
         digitalWrite(S3,HIGH);
         break;
     }
-  }//Cierre switch */
+  }//Cierre switch 
 }
 
