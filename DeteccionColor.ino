@@ -4,6 +4,8 @@
 #define S3 7
 #define LED 8
 #define OUT 3
+#define CICLOS 4 // Ciclos que se van a tomar para el calculo del periodo
+#define INTERRUPCIONES CICLOS*2
 
 volatile int numeroInterrupciones;
 int pinInterrupcion = OUT;
@@ -15,7 +17,7 @@ unsigned long tiempoTranscurrido;
 void setup() {
   Serial.begin(9600);
   configurarPines();
-  //configurarSensor();
+  configurarSensor();
   configurarInterrupciones();
   noInterrupts(); //Se deshabilitan las interrupciones
   flag = 0;
@@ -31,10 +33,10 @@ void loop() {
     obtenerFrecuencia(flag);
     tiempoInicial = micros();
     interrupts(); //Se habilitan las interrupciones
-    while(!(numeroInterrupciones == 8)); //Mientras no se produzcan dos interrupciones, se queda en el bucle
+    while(!(numeroInterrupciones == INTERRUPCIONES)); //Mientras no se produzcan dos interrupciones, se queda en el bucle
     noInterrupts(); //Cuando ya paso el tiempo, se deshabilitan las interrupciones
     tiempoTranscurrido = micros() - tiempoInicial;
-    frecuencias[flag]= (1000000/(tiempoTranscurrido/4));
+    frecuencias[flag]= (1000000/(tiempoTranscurrido/CICLOS));
     numeroInterrupciones = 0;
     tiempoTranscurrido = 0;
     tiempoInicial = 0;
@@ -91,7 +93,7 @@ void ISR_IE(){
 }
 
 void obtenerFrecuencia(int c){
-/*
+
   switch(c){
     case 0:{ //Captura luminosidad
           digitalWrite(S2,HIGH); 
@@ -113,6 +115,6 @@ void obtenerFrecuencia(int c){
         digitalWrite(S3,HIGH);
         break;
     }
-  }//Cierre switch */
+  }//Cierre switch 
 }
 
